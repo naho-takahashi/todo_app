@@ -13,11 +13,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 import environ
-from decouple import config
-from dj_database_url import parse as dburl
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
 env.read_env('.env')
+
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
@@ -102,7 +103,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 default_dburl = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
 DATABASES = {
-    "default": config("DATABASE_URL", default=default_dburl, cast=dburl),
+    'default': env.db(
+        'DATABASE_URL',
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}"
+    )
 }
 
 # Password validation
