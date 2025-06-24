@@ -17,7 +17,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-env.read_env('.env')
+env.read_env(os.path.join(BASE_DIR, ".env"))
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
@@ -26,15 +26,10 @@ DEBUG = env.bool('DEBUG', default=False)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
-    'default': {
-        'ENGINE': env('DATABASE_ENGINE', default='django.db.backends.sqlite3'),
-        'NAME': env('DATABASE_DB', default=os.path.join(BASE_DIR, 'db.sqlite3')),
-        # 以下は、MySQLやPostgreSQLの場合に設定
-        # 'USER': env('DATABASE_USER', default='django_user'),
-        # 'PASSWORD': env('DATABASE_PASSWORD', default='password'),
-        # 'HOST': env('DATABASE_HOST', default='localhost'),
-        # 'PORT': env('DATABASE_PORT', default='5432'),
-    }
+    'default': env.db(
+        'DATABASE_URL',
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}"
+    )
 }
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
